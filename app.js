@@ -1,31 +1,61 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const session = require('express-session')
+const MongoStore = require('connect-mongo')(session)
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const exphbs = require('express-handlebars')
+const {mongo_db} = require('./database')
+const env = require('./config')
+const app = express();
+const bodyParser = require('body-parser')
+const busboyBodyParser = require('busboy-body-parser');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
-var app = express();
+global.db = new mongo_db(env)
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const apiRouter = require('./routes/api');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
+app.engine('.hbs', exphbs({
+  defaultLayout: 'main',
+  partialsDir: path.join(app.get('views'), 'partials'),
+  layoutsDir: path.join(app.get('views'), 'layouts'),
+  extname: '.hbs'
+}))
 app.set('view engine', 'hbs');
-
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended: true}));
+// parse application/json
+app.use(bodyParser.json());
+//parse multipart/form-data    
+app.use(busboyBodyParser());
+
+
+app.use(session({
+  secret: 'secret',
+  useNewUrlParser: true,
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: db.connection })
+}))
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
+app.use('/api', apiRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -38,4 +68,9 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+const port = (process.env.PORT || '4000');
+app.set('port', port);
+app.listen(port, () => {
+  console.log('Server on port: ', port);
+  console.log("Enviroment: ", app.get('env'));
+})
