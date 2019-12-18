@@ -1,2 +1,30 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-header text-center">
+                    <h1>Amigo Secreto Online</h1>
+                    <p>Edicion Navidad</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-center">Entra a una sala</h5>
+                    <form action="/enter" method="post" class="form-signin">
+                        <div class="form-label-group">
+                            <input type="text" id="name" class="form-control text-center text-uppercase"
+                                placeholder="Nombre" required autofocus>
+                        </div>
+                        <div class="form-label-group my-4">
+                            <input type="number" id="room-id" class="form-control text-center text-uppercase"
+                                placeholder="Codigo de sala" required autofocus>
+                        </div>
+                        <button class=" my-4 btn btn-lg btn-primary btn-block text-uppercase"
+                            type="submit">Entrar</button>
+                        <hr class="my-4">
+                    </form>
+                    <a href="/login" class="btn btn-lg btn-google btn-success btn-block text-uppercase"><i
+                            class="fab fa-google mr-2"></i> Entra con Google</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
