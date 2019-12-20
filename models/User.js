@@ -4,6 +4,7 @@ const { ObjectId } = Schema
 const UserSchema = new Schema({
     id: { type: String, unique: true, required: true },
     name: { type: String, unique: true, required: true },
+    username: { type: String, unique: true},
     email: { type: String, unique: true, required: true },
     password: { type: String },
     location: {},

@@ -39,7 +39,8 @@ app.engine('.hbs', exphbs({
     defaultLayout: 'main',
     partialsDir: path.join(app.get('views'), 'partials'),
     layoutsDir: path.join(app.get('views'), 'layouts'),
-    extname: '.hbs'
+    extname: '.hbs',
+    helpers: require('./config/helpers')
 }))
 
 // parse application/x-www-form-urlencoded
@@ -64,7 +65,7 @@ app.use((req, res, next) => {
 app.use('/public', express.static(path.join(__dirname, './public')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    next(createError(404));
+    next(createError(404))
 });
 
 

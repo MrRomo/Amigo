@@ -5,9 +5,9 @@ const RoomSchema = new Schema({
     userId: { type: String, required: true },
     name: { type: String, required: true },
     code: { type: Number, required: true },
+    isOpen: {type: Boolean, default:true},
     users: {},
     number: { type: Number, default: 0 },
-    lastSign: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 })

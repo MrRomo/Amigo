@@ -25,9 +25,20 @@ class mongo_db {
         }
     }
 
+    async getOne(query, Schema, options) {
+        console.log('Get room', query);
+        try {
+            let data = await Schema.findById(query)
+            return { data }
+        } catch (error) {
+            return this.sendError(error)
+        }
+    }
     async get(query, Schema, options) {
         const { sort } = options || "-1"
         const { limit } = options || 1
+        console.log('Get room', query);
+        
         try {
             let data = await Schema.find(query)
                 .sort(sort)
@@ -49,7 +60,6 @@ class mongo_db {
     async update({ query, options, array }, Schema) {
         try {
             const update = await Schema.updateOne(query, options, array || {})
-            console.log(update);
             let data = await this.get(query, Schema, {})
             return { data: data.data, message: 'Object updated' }
 
@@ -59,8 +69,6 @@ class mongo_db {
     }
     async delete(query, Schema) {
         try {
-            console.log("query",query);
-            
             await Schema.deleteMany(query)
             return { message: 'All documents were deleted' }
         } catch (error) {
