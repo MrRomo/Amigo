@@ -33,7 +33,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(require('./lib/oauth2').router);
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', exphbs({
@@ -43,32 +42,34 @@ app.engine('.hbs', exphbs({
     extname: '.hbs'
 }))
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+ 
+// parse application/json
+app.use(bodyParser.json())
+
+
 app.set('view engine', 'hbs');
 app.use(logger('dev'));
 app.use(cookieParser());
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
-// parse application/json
-app.use(bodyParser.json());
-//parse multipart/form-data    
-app.use(busboyBodyParser());
+
+app.use('/', viewsRouter);
+app.use('/api', apiRouter);
 app.use((req, res, next) => {
     res.locals.user = req.user || null
     next();
 })
-app.use('/', viewsRouter);
-app.use('/api', apiRouter);
 
 app.use('/public', express.static(path.join(__dirname, './public')));
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};

@@ -26,7 +26,7 @@ class mongo_db {
     }
 
     async get(query, Schema, options) {
-        const { sort } = options || -1
+        const { sort } = options || "-1"
         const { limit } = options || 1
         try {
             let data = await Schema.find(query)
@@ -59,6 +59,8 @@ class mongo_db {
     }
     async delete(query, Schema) {
         try {
+            console.log("query",query);
+            
             await Schema.deleteMany(query)
             return { message: 'All documents were deleted' }
         } catch (error) {

@@ -2,18 +2,13 @@ var express = require('express');
 var router = express.Router();
 var express = require('express');
 var router = express.Router();
+var { user, room } = require('../controller')
 const { isLoggedIn, isNotLoggedIn } = require('../lib/auth')
-const User = require('../models/User')
-    /* GET home page. */
-router.get('/', isNotLoggedIn, function(req, res, next) {
-    res.render('index', { title: 'Express' });
-});
 
-router.get('/rooms', isLoggedIn, async(req, res) => {
-    console.log(req.user);
-    const response = await db.get({ "id": req.user.id }, User)
-    console.log('User Found', response);
-    res.render('rooms', { title: 'Rooms', user: req.user })
-})
+    /* GET home page. */
+router.get('/', isNotLoggedIn,room.index)
+router.get('/rooms', isLoggedIn,room.room)
+router.post('/create', isLoggedIn, room.create)
+router.get('/delete/:id', isLoggedIn, room.delete)
 
 module.exports = router;
