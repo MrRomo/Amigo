@@ -9,16 +9,16 @@
                     <h2 style="margin: 0 0 0 10px;">{{room.name}}</h2>
                     <h2 id="room_id" style="margin: 0 0 0 10px; display:none;">{{room._id}}</h2>
                 </div>
-                <div>
-                    <a class="btn btn-success text-white" data-toggle="modal" data-target="#addPersonModal">Agregar <i
-                            class="fas fa-user-plus"></i></a>
-                    {{#if user}}
-                    <a href="/logout" class="btn btn-success"><i class="fas fa-sign-out-alt"></i></a>
-                    {{/if}}
-                </div>
+            </div>
+            <div class="mr-0">
+                <a class="btn btn-success text-white" data-toggle="modal" data-target="#addPersonModal">Agregar <i
+                        class="fas fa-user-plus"></i></a>
+                {{#if user}}
+                <a href="/logout" class="btn btn-success"><i class="fas fa-sign-out-alt"></i></a>
+                {{/if}}
             </div>
         </div>
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush" id="listMember">
             {{#if room.users.member}}
             {{#each room.users.member}}
             <li class="list-group-item d-inline d-flex justify-content-between ">
@@ -67,8 +67,6 @@
 <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-app.js"></script>
 <!-- Add additional services that you want to use -->
 <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-database.js"></script>
-
-
 <script>
     const formEditMember = document.querySelector("#editMember");
     const formAction = $('#editMember').attr('action')
@@ -82,21 +80,42 @@
         $('#posEditMember').val(pos)
         $('#editMember').attr('action', action);
     }
+</script>
 
+{{#if room.isOpen}}
+<script>
     firebase.initializeApp({ databaseURL: 'https://test-amigo-secreto.firebaseio.com' });
     var database = firebase.database();
     const room_id = $('#room_id').text()
     var room = database.ref('rooms/' + room_id)
-    var change = false
+    var check = false
     room.on('value', function (snapshot) {
         users = snapshot.val();
         console.log(users)
-        if ((users)&&(change)) {
-            location.reload();
+        if ((users)&&(check)){
+            const usersParse = JSON.parse(users)
+            console.log(usersParse.member)
+            $('#listMember')[0].innerHTML = ""
+            usersParse.member.forEach(x => {
+                const render = template(x, room_id)
+                $('#listMember').append(render)
+            })
         }
-        change = true
+        check = true
     })
 
+    const template = ({ name, pos, password }, _id) => ` <li class="list-group-item d-inline d-flex justify-content-between ">
+            <div class="">
+                <a class="btn btn-primary btn-block text-white text-uppercase">${name}</a>
+            </div>
+            <div class="">
+                <a class="align-bottom dropdown-item btn btn-danger d-inline"
+                    href="/api/member/delete/${_id}/${pos}"><i class="fa fa-trash-alt"></i></a>
+                <a class="dropdown-item align-bottom btn btn-success d-inline" onclick=editMember("${_id}",${pos},"${name}","${password}")><i class="fa fa-pen"></i></a >
+                </div >
+            </li >`
 
 
 </script>
+
+{{/if}}

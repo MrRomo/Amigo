@@ -130,6 +130,8 @@ crtl.deleteMember = async (req, res) => {
         }
         const update = await db.update(query, Room)
         console.log(update);
+        firebase.set(id,JSON.stringify(users))
+
     }
     res.redirect(req.headers.referer)
 }
