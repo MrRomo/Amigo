@@ -21,7 +21,7 @@ crtl.get = async (req, res) => {
     const room = await db.get(query, Room)
     console.log(room);
     console.log(room.data[0].users);
-    res.render('room', { title: room.data[0].name, room: room.data[0], user: req.user })
+    res.render('room', { title: room.data[0].name, room: room.data[0], user: req.user, firebaseURL: process.env.firebaseURL })
 }
 
 crtl.getPublicEnter = async (req, res) => {
@@ -45,7 +45,7 @@ crtl.getPublic = async (req, res) => {
         if (room.data.length) {
             const response = room.data[0]
             console.log(response);
-            res.render('room', { title: response.title, room: response })
+            res.render('room', { title: response.title, room: response, firebaseURL: process.env.firebaseURL })
         } else {
             res.send('sala no encontrada')
         }

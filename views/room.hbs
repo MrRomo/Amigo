@@ -8,6 +8,7 @@
                     {{/if}}
                     <h2 style="margin: 0 0 0 10px;">{{room.name}}</h2>
                     <h2 id="room_id" style="margin: 0 0 0 10px; display:none;">{{room._id}}</h2>
+                    <h2 id="firebasURL" style="margin: 0 0 0 10px; display:none;">{{firebaseURL}}</h2>
                 </div>
             </div>
             <div class="mr-0">
@@ -84,7 +85,8 @@
 
 {{#if room.isOpen}}
 <script>
-    firebase.initializeApp({ databaseURL: 'https://test-amigo-secreto.firebaseio.com' });
+    const firebaseURL = $('#firebasURL').text()
+    firebase.initializeApp({ databaseURL: firebaseURL});
     var database = firebase.database();
     const room_id = $('#room_id').text()
     var room = database.ref('rooms/' + room_id)
