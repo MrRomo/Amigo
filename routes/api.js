@@ -13,6 +13,7 @@ router.put('/update', user.update);
     // Members 
 router.post('/member/add/:id', room.addMember)
 router.get('/member/delete/:id/:pos', room.deleteMember)
+router.post('/member/edit/:id/:pos', room.editMember)
 
 
 

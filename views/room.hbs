@@ -7,6 +7,7 @@
                     <a href="/rooms" class="btn btn-primary text-white"><i class="fas fa-arrow-left"></i></a>
                     {{/if}}
                     <h2 style="margin: 0 0 0 10px;">{{room.name}}</h2>
+                    <h2 id="room_id" style="margin: 0 0 0 10px; display:none;">{{room._id}}</h2>
                 </div>
                 <div>
                     <a class="btn btn-success text-white" data-toggle="modal" data-target="#addPersonModal">Agregar <i
@@ -24,12 +25,19 @@
                 <div class="">
                     <a class="btn btn-primary btn-block text-white text-uppercase">{{name}}</a>
                 </div>
+                {{#if @root.room.isOpen}}
                 <div class="">
                     <a class="align-bottom dropdown-item btn btn-danger d-inline"
                         href="/api/member/delete/{{@root.room._id}}/{{pos}}"><i class="fa fa-trash-alt"></i></a>
-                    <a class="dropdown-item align-bottom btn btn-success d-inline" href="/room/edit/{{_id}}"><i
+                    <a class="dropdown-item align-bottom btn btn-success d-inline"
+                        onclick=editMember("{{@root.room._id}}",{{pos}},"{{name}}","{{password}}")><i
                             class="fa fa-pen"></i></a>
                 </div>
+                {{else}}
+                <div class="">
+                    <a class="btn btn-success d-inline text-white">Quien me tocó <i class="fa fa-eye"></i></a>
+                </div>
+                {{/if}}
             </li>
             {{/each}}
             {{else}}
@@ -42,5 +50,48 @@
         </ul>
     </div>
 </div>
-
+{{#if user}}
+<div class="col-lg-6 mb-2 mx-auto">
+    <div class="card my-3" style=" margin: auto; text-align: center;">
+        <div class="card-body">
+            <button class="btn btn-secondary" type="submit">Probar Repartir</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#alertDistribute">Repartirlos
+                papeles</button>
+        </div>
+    </div>
+</div>
+{{>alertDistribute}}
+{{/if}}
 {{>addPerson}}
+{{>editPerson}}
+<script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-app.js"></script>
+<!-- Add additional services that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-database.js"></script>
+
+
+<script>
+    const formEditMember = document.querySelector("#editMember");
+    const formAction = $('#editMember').attr('action')
+    console.log(formEditMember)
+    function editMember(_id, pos, name, password) {
+        const action = formAction + '/' + pos
+        console.log(_id, pos, name, password, formAction, action)
+        $('#editPersonModal').modal('show')
+        $('#nameEditMember').val(name)
+        $('#passwordEditMember').val(password)
+        $('#posEditMember').val(pos)
+        $('#editMember').attr('action', action);
+    }
+
+    firebase.initializeApp({databaseURL:'https://test-amigo-secreto.firebaseio.com'});
+    var database = firebase.database();
+    const room_id = $('#room_id').text()
+    var room = database.ref('rooms/'+room_id)
+    room.on('value', function (snapshot) {
+        users = snapshot.val();
+        console.log(users)
+    })
+
+
+
+</script>

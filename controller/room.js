@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const User = require('../models/User')
 const Room = require('../models/Room')
-
+const firebase = require('../database/firebase')
 
 const crtl = {}
 
@@ -76,6 +76,10 @@ crtl.create = async (req, res) => {
     }
     const room = await db.create(query, Room)
     console.log(room);
+    if(!room.error){
+        const data = room.data
+        firebase.set(data._id,JSON.stringify(data.users))
+    }
     res.redirect('/rooms')
 }
 
@@ -84,6 +88,7 @@ crtl.delete = async (req, res) => {
     const { id } = req.user
     console.log("delete room with id", _id, id);
     const deleteRoom = await db.delete({ "userId": id, "_id": _id }, Room)
+    firebase.del(_id)
     console.log(deleteRoom);
     res.redirect('/rooms')
 }
@@ -104,18 +109,19 @@ crtl.addMember = async (req, res) => {
             options: { "users": users }
         }
         const update = await db.update(query, Room)
+        firebase.set(id,JSON.stringify(users))
         console.log(update);
         res.redirect(req.headers.referer)
     }
 }
 crtl.deleteMember = async (req, res) => {
-    const { id,pos } = req.params
+    const { id, pos } = req.params
     const room = await db.get({ "_id": id }, Room)
     if (room.data.length) {
         const { users } = room.data[0]
-        users.member.splice(parseInt(pos),1)
+        users.member.splice(parseInt(pos), 1)
         for (let i = 0; i < users.member.length; i++) {
-            users.member[i].pos = i            
+            users.member[i].pos = i
         }
         console.log(users)
         const query = {
@@ -124,7 +130,27 @@ crtl.deleteMember = async (req, res) => {
         }
         const update = await db.update(query, Room)
         console.log(update);
-        res.redirect(req.headers.referer)
     }
+    res.redirect(req.headers.referer)
 }
+
+crtl.editMember = async (req, res) => {
+    const { id, pos } = req.params
+    const { name, password } = req.body
+    const room = await db.get({ "_id": id }, Room)
+    if (room.data.length) {
+        const { users } = room.data[0]
+        users.member[pos].name = name
+        users.member[pos].password = password
+        console.log(users);        
+        const query = {
+            query: { '_id': id },
+            options: { "users": users }
+        }
+        firebase.set(id,JSON.stringify(users))
+        const update = await db.update(query, Room)
+    }
+    res.redirect(req.headers.referer)
+}
+
 module.exports = crtl
