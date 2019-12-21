@@ -1,47 +1,46 @@
-<div class="col-md-6 mb-2 mx-auto">
+<div class="col-lg-6 mb-2 mx-auto">
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between">
-                <div>
-                    <h2>Salas de {{user.username}}</h2>
+                <div class="d-flex justify-content-center">
+                    {{#if user}}
+                    <a href="/rooms" class="btn btn-primary text-white"><i class="fas fa-arrow-left"></i></a>
+                    {{/if}}
+                    <h2 style="margin: 0 0 0 10px;">{{room.name}}</h2>
                 </div>
                 <div>
+                    <a class="btn btn-success text-white" data-toggle="modal" data-target="#addPersonModal">Agregar <i
+                            class="fas fa-user-plus"></i></a>
+                    {{#if user}}
                     <a href="/logout" class="btn btn-success"><i class="fas fa-sign-out-alt"></i></a>
+                    {{/if}}
                 </div>
             </div>
         </div>
         <ul class="list-group list-group-flush">
-            {{#if rooms}}
-            {{#each rooms}}
+            {{#if room.users.member}}
+            {{#each room.users.member}}
             <li class="list-group-item d-inline d-flex justify-content-between ">
                 <div class="">
-                    <a href="/room/{{code}}" class="btn btn-primary btn-block text-uppercase">{{name}}</a>
+                    <a class="btn btn-primary btn-block text-white text-uppercase">{{name}}</a>
                 </div>
                 <div class="">
-                    <span class="align-bottom">{{timeAgo createdAt}}</span>
-                    <a class="align-bottom dropdown-item btn btn-danger d-inline" href="/room/delete/{{_id}}"><i
-                            class="fa fa-trash-alt"></i></a>
+                    <a class="align-bottom dropdown-item btn btn-danger d-inline"
+                        href="/api/member/delete/{{@root.room._id}}/{{pos}}"><i class="fa fa-trash-alt"></i></a>
                     <a class="dropdown-item align-bottom btn btn-success d-inline" href="/room/edit/{{_id}}"><i
                             class="fa fa-pen"></i></a>
                 </div>
             </li>
             {{/each}}
             {{else}}
-            <h4 class="card-title text-center">No tienes salas creada <h4>
-                    {{/if}}
+            <li class="list-group-item d-inline d-flex justify-content-between ">
+                <div class="">
+                    <h4 class="card-title text-center">No tienes miembros en esta sala <h4>
+                </div>
+            </li>
+            {{/if}}
         </ul>
     </div>
-    <div class="card" style=" margin: auto; text-align: center;">
-        <div class="card-body">
-            <form action="/room/create" method="POST" class="form-signin">
-                <div class="form-label-group form group">
-                    <input type="text" id="name" name="name" class="form-control text-center text-uppercase"
-                        placeholder="Nombre de la sala" required="true">
-                </div>
-                <div class="form-group my-3">
-                    <button class="btn btn-primary" type="submit">Crear una sala</button>
-                </div>
-            </form>
-        </div>
-    </div>
 </div>
+
+{{>addPerson}}

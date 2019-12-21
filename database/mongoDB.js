@@ -26,7 +26,7 @@ class mongo_db {
     }
 
     async getOne(query, Schema, options) {
-        console.log('Get room', query);
+        console.log('Get object', query);
         try {
             let data = await Schema.findById(query)
             return { data }

@@ -10,5 +10,10 @@ router.delete('/delete', user.deleteUser);
 router.put('/update', user.update);
 
 
+    // Members 
+router.post('/member/add/:id', room.addMember)
+router.get('/member/delete/:id/:pos', room.deleteMember)
+
+
 
 module.exports = router;

@@ -5,6 +5,7 @@ const Room = require('../models/Room')
 
 const crtl = {}
 
+/// ROOM ROUTER
 crtl.index = async (req, res) => {
     const rooms = await db.get({ "userId": req.user.id }, Room, { limit: 100 })
     console.log(rooms);
@@ -19,7 +20,8 @@ crtl.get = async (req, res) => {
     console.log(query);
     const room = await db.get(query, Room)
     console.log(room);
-    res.json(room)
+    console.log(room.data[0].users);
+    res.render('room', { title: room.data[0].name, room: room.data[0], user: req.user })
 }
 
 crtl.getPublicEnter = async (req, res) => {
@@ -32,21 +34,18 @@ crtl.getPublicEnter = async (req, res) => {
 crtl.getPublic = async (req, res) => {
     const { username, code } = req.params
     const user = await db.get({ "username": username.toLowerCase() }, User)
-    console.log(user);
-    console.log(user.data.length);
-    
+
     if (user.data.length) {
         const query = {
             code: parseInt(req.params.code),
             userId: user.data[0].id
         }
-        console.log(query);
         const room = await db.get(query, Room)
-        console.log(room);
-        
+
         if (room.data.length) {
-            console.log(room);
-            res.json(room)
+            const response = room.data[0]
+            console.log(response);
+            res.render('room', { title: response.title, room: response })
         } else {
             res.send('sala no encontrada')
         }
@@ -71,7 +70,10 @@ crtl.create = async (req, res) => {
     } while (lastRoom.error);
 
     query.name = req.body.name
-
+    query.users = {
+        member: [{ name: req.user.username, pos: 0, password: "" }],
+        mix: []
+    }
     const room = await db.create(query, Room)
     console.log(room);
     res.redirect('/rooms')
@@ -87,5 +89,42 @@ crtl.delete = async (req, res) => {
 }
 
 
+//MEMBER ROUTER
+crtl.addMember = async (req, res) => {
+    const { id } = req.params
+    const { name, password } = req.body
 
+    const room = await db.get({ "_id": id }, Room)
+    if (room.data.length) {
+        const { users } = room.data[0]
+        users.member.push({ name, password, pos: users.member.length })
+        console.log(users)
+        const query = {
+            query: { '_id': id },
+            options: { "users": users }
+        }
+        const update = await db.update(query, Room)
+        console.log(update);
+        res.redirect(req.headers.referer)
+    }
+}
+crtl.deleteMember = async (req, res) => {
+    const { id,pos } = req.params
+    const room = await db.get({ "_id": id }, Room)
+    if (room.data.length) {
+        const { users } = room.data[0]
+        users.member.splice(parseInt(pos),1)
+        for (let i = 0; i < users.member.length; i++) {
+            users.member[i].pos = i            
+        }
+        console.log(users)
+        const query = {
+            query: { '_id': id },
+            options: { "users": users }
+        }
+        const update = await db.update(query, Room)
+        console.log(update);
+        res.redirect(req.headers.referer)
+    }
+}
 module.exports = crtl
