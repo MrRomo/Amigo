@@ -90,6 +90,7 @@
     room.on('value', function (snapshot) {
         users = snapshot.val();
         console.log(users)
+        location.reload();
     })
 
 
