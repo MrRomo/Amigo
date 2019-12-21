@@ -83,14 +83,18 @@
         $('#editMember').attr('action', action);
     }
 
-    firebase.initializeApp({databaseURL:'https://test-amigo-secreto.firebaseio.com'});
+    firebase.initializeApp({ databaseURL: 'https://test-amigo-secreto.firebaseio.com' });
     var database = firebase.database();
     const room_id = $('#room_id').text()
-    var room = database.ref('rooms/'+room_id)
+    var room = database.ref('rooms/' + room_id)
+    var change = false
     room.on('value', function (snapshot) {
         users = snapshot.val();
         console.log(users)
-        location.reload();
+        if ((users)&&(change)) {
+            location.reload();
+        }
+        change = true
     })
 
 
