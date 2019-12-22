@@ -19,7 +19,7 @@ crtl.index = async (req, res) => {
 
 crtl.getPublicEnter = async (req, res) => {
     const { username, code } = req.body
-    res.redirect(`/@${username}/${code}`)
+    res.redirect(`/@${username.toLowerCase()}/${code}`)
 }
 
 crtl.get = async (req, res) => {
