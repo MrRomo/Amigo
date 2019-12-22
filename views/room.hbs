@@ -1,4 +1,4 @@
-<div class="col-lg-6 mb-2 mx-auto">
+<div class="col-lg-9 mb-2 mx-auto">
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between">
@@ -24,19 +24,21 @@
             {{#each room.users.member}}
             <li class="list-group-item d-inline d-flex justify-content-between ">
                 <div class="">
-                    <a class="btn btn-primary btn-block text-white text-uppercase">{{name}}</a>
+                    <a class="btn btn-primary btn-block text-white">{{name}}</a>
                 </div>
                 {{#if @root.room.isOpen}}
                 <div class="">
-                    <a class="align-bottom dropdown-item btn btn-danger d-inline"
-                        href="/api/member/delete/{{@root.room._id}}/{{pos}}"><i class="fa fa-trash-alt"></i></a>
+                    <a class="align-bottom dropdown-item btn btn-danger d-inline eventMember"
+                        onclick=eventMember("/api/member/delete/{{@root.room._id}}/{{pos}}")> <i
+                        class="fa fa-trash-alt"></i></a>
                     <a class="dropdown-item align-bottom btn btn-success d-inline"
-                        onclick=editMember("{{@root.room._id}}",{{pos}},"{{name}}","{{password}}")><i
+                        onclick="editMember('{{@root.room._id}}',{{pos}},'{{name}}','{{password}}')"><i
                             class="fa fa-pen"></i></a>
                 </div>
                 {{else}}
                 <div class="">
-                    <a class="btn btn-success d-inline text-white">Quien me tocó <i class="fa fa-eye"></i></a>
+                    <a class="btn btn-success d-inline text-white eventMember">Quien me tocó <i
+                            class="fa fa-eye"></i></a>
                 </div>
                 {{/if}}
             </li>
@@ -52,7 +54,7 @@
     </div>
 </div>
 {{#if user}}
-<div class="col-lg-6 mb-2 mx-auto">
+<div class="col-lg-9 mb-2 mx-auto">
     <div class="card my-3" style=" margin: auto; text-align: center;">
         <div class="card-body">
             <button class="btn btn-secondary" type="submit">Probar Repartir</button>
@@ -79,14 +81,51 @@
         $('#nameEditMember').val(name)
         $('#passwordEditMember').val(password)
         $('#posEditMember').val(pos)
-        $('#editMember').attr('action', action);
+        $('#editMember').attr('action', action)
     }
+
+    $('#addMember').click((event) => {
+        event.preventDefault();
+        const data = {
+            name: $('[name="name"]').val(),
+            password: $('[name="password"]').val()
+        }
+        var url = $('#addMemberForm').attr('action')
+        eventMember(url, data)
+        $('[name="name"]').val('')
+        $('[name="password"]').val('')
+        $('#addPersonModal').modal('hide')
+    })
+
+    $('#editMember').on('submit', e => {
+        e.preventDefault()
+        const data = {
+            name: $('#nameEditMember').val(),
+            password: $('#passwordEditMember').val()
+        }
+        var url = $('#editMember').attr('action')
+        eventMember(url, data)
+        $('#editPersonModal').modal('hide')
+    })
+
+    function eventMember(url, data) {
+        console.log(url)
+        fetch(url, {
+            method: 'POST', // or 'PUT'
+            body: JSON.stringify(data), // data can be `string` or {object}!
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => console.log(res))
+    }
+
 </script>
 
 {{#if room.isOpen}}
 <script>
     const firebaseURL = $('#firebasURL').text()
-    firebase.initializeApp({ databaseURL: firebaseURL});
+    firebase.initializeApp({ databaseURL: firebaseURL });
+    console
     var database = firebase.database();
     const room_id = $('#room_id').text()
     var room = database.ref('rooms/' + room_id)
@@ -94,7 +133,7 @@
     room.on('value', function (snapshot) {
         users = snapshot.val();
         console.log(users)
-        if ((users)&&(check)){
+        if ((users) && (check)) {
             const usersParse = JSON.parse(users)
             console.log(usersParse.member)
             $('#listMember')[0].innerHTML = ""
@@ -108,12 +147,12 @@
 
     const template = ({ name, pos, password }, _id) => ` <li class="list-group-item d-inline d-flex justify-content-between ">
             <div class="">
-                <a class="btn btn-primary btn-block text-white text-uppercase">${name}</a>
+                <a class="btn btn-primary btn-block text-white">${name}</a>
             </div>
             <div class="">
                 <a class="align-bottom dropdown-item btn btn-danger d-inline"
-                    href="/api/member/delete/${_id}/${pos}"><i class="fa fa-trash-alt"></i></a>
-                <a class="dropdown-item align-bottom btn btn-success d-inline" onclick=editMember("${_id}",${pos},"${name}","${password}")><i class="fa fa-pen"></i></a >
+                     onclick="eventMember('/api/member/delete/${_id}/${pos}')"><i class="fa fa-trash-alt"></i></a>
+                <a class="dropdown-item align-bottom btn btn-success d-inline" onclick="editMember('${_id}',${pos},'${name}','${password}')"><i class="fa fa-pen"></i></a >
                 </div >
             </li >`
 

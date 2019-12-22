@@ -1,0 +1,43 @@
+<div class="modal fade" tabindex="-1" id="alertDistribute" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h2 id="callback" style="margin: 0 0 0 10px; display:none;">{{callback}}</h2>
+                <h5 class="modal-title text-white" id="exampleModalLongTitle">ERROR</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <h4>{{message}}</h4>
+                    <pre>{{error}}</pre>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group text-center">
+                    <h4>Redireccionando</h4>
+                    <h2 id="redirect">3</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var count = 2
+    var callback = $('#callback').text().replace('callback', '')
+    console.log(callback)
+    setTimeout(() => {
+        $('#alertDistribute').modal('show')
+    }, 200)
+    const redirect = setInterval(() => {
+        $('#redirect').text(count)
+        count--
+        if (!count) {
+            window.location.href = callback;
+            redirect.clearInterval()
+        }
+    }, 1000)
+</script>

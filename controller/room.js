@@ -2,55 +2,43 @@ const mongoose = require('mongoose')
 const User = require('../models/User')
 const Room = require('../models/Room')
 const firebase = require('../database/firebase')
-
+const { firebaseURL } = process.env
 const crtl = {}
+const callback = process.env.callback
+
 
 /// ROOM ROUTER
 crtl.index = async (req, res) => {
-    const rooms = await db.get({ "userId": req.user.id }, Room, { limit: 100 })
-    console.log(rooms);
-    res.render('rooms', { title: 'Rooms', user: req.user, rooms: rooms.data })
-}
-
-crtl.get = async (req, res) => {
-    const query = {
-        code: req.params.code,
-        userId: req.user.id
+    let rooms = await db.get({ "userId": req.user.id }, Room, { limit: 100 })
+    if (rooms.error) {
+        res.render('error', { title: 'error', message: room.message })
+    } else {
+        res.render('rooms', { title: 'Rooms', user: req.user, rooms: rooms.data })
     }
-    console.log(query);
-    const room = await db.get(query, Room)
-    console.log(room);
-    console.log(room.data[0].users);
-    res.render('room', { title: room.data[0].name, room: room.data[0], user: req.user, firebaseURL: process.env.firebaseURL })
 }
 
 crtl.getPublicEnter = async (req, res) => {
-
     const { username, code } = req.body
     res.redirect(`/@${username}/${code}`)
-
 }
 
-crtl.getPublic = async (req, res) => {
+crtl.get = async (req, res) => {
     const { username, code } = req.params
-    const user = await db.get({ "username": username.toLowerCase() }, User)
+    const user = await db.get({ username }, User)
 
     if (user.data.length) {
-        const query = {
-            code: parseInt(req.params.code),
-            userId: user.data[0].id
-        }
-        const room = await db.get(query, Room)
-
-        if (room.data.length) {
-            const response = room.data[0]
-            console.log(response);
-            res.render('room', { title: response.title, room: response, firebaseURL: process.env.firebaseURL })
+        console.log(user)
+        let room = await db.get({ "userId": user.data[0].id, code }, Room)
+        console.log(room)
+        room = room.data
+        if (room.length) {
+            room = room[0]
+            res.render('room', { title: room.name, room, user: req.user, firebaseURL })
         } else {
-            res.send('sala no encontrada')
+            res.render('customError', { title: 'ERROR', message: `Error sala ${code} no encontrada`, callback })
         }
     } else {
-        res.send('Usuario no encontrado')
+        res.render('customError', { title: 'ERROR', message: `Error usuario ${username} no encontrado`, callback })
     }
 }
 
@@ -76,9 +64,9 @@ crtl.create = async (req, res) => {
     }
     const room = await db.create(query, Room)
     console.log(room);
-    if(!room.error){
+    if (!room.error) {
         const data = room.data
-        firebase.set(data._id,JSON.stringify(data.users))
+        firebase.set(data._id, JSON.stringify(data.users))
     }
     res.redirect('/rooms')
 }
@@ -86,11 +74,11 @@ crtl.create = async (req, res) => {
 crtl.delete = async (req, res) => {
     const _id = req.params.id
     const { id } = req.user
-    console.log("delete room with id", _id, id);
     const deleteRoom = await db.delete({ "userId": id, "_id": _id }, Room)
     firebase.del(_id)
-    console.log(deleteRoom);
-    res.redirect('/rooms')
+    res.status(200).json({
+        message: "deleted"
+    })
 }
 
 
@@ -98,10 +86,10 @@ crtl.delete = async (req, res) => {
 crtl.addMember = async (req, res) => {
     const { id } = req.params
     const { name, password } = req.body
-
-    const room = await db.get({ "_id": id }, Room)
+    let room = await db.get({ "_id": id }, Room)
     if (room.data.length) {
-        const { users } = room.data[0]
+        room = room.data[0]
+        const { users } = room
         users.member.push({ name, password, pos: users.member.length })
         console.log(users)
         const query = {
@@ -109,11 +97,16 @@ crtl.addMember = async (req, res) => {
             options: { "users": users }
         }
         const update = await db.update(query, Room)
-        firebase.set(id,JSON.stringify(users))
+        firebase.set(id, JSON.stringify(users))
         console.log(update);
-        res.redirect(req.headers.referer)
+        res.status(200).json({
+            message: "member added"
+        })
+    }else{
+        res.render('customError', { title: 'ERROR', message: `Error sala ${id} no encontrada`, callback })
     }
 }
+
 crtl.deleteMember = async (req, res) => {
     const { id, pos } = req.params
     const room = await db.get({ "_id": id }, Room)
@@ -130,7 +123,7 @@ crtl.deleteMember = async (req, res) => {
         }
         const update = await db.update(query, Room)
         console.log(update);
-        firebase.set(id,JSON.stringify(users))
+        firebase.set(id, JSON.stringify(users))
 
     }
     res.redirect(req.headers.referer)
@@ -144,12 +137,12 @@ crtl.editMember = async (req, res) => {
         const { users } = room.data[0]
         users.member[pos].name = name
         users.member[pos].password = password
-        console.log(users);        
+        console.log(users);
         const query = {
             query: { '_id': id },
             options: { "users": users }
         }
-        firebase.set(id,JSON.stringify(users))
+        firebase.set(id, JSON.stringify(users))
         const update = await db.update(query, Room)
     }
     res.redirect(req.headers.referer)

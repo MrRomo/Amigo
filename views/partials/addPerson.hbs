@@ -8,19 +8,18 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="/api/member/add/{{room._id}}" method="post">
+            <form action="/api/member/add/{{room._id}}" method="post" id="addMemberForm">
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="text" name="name" class="form-control" placeholder="Nombre" required>
+                        <input type="text" name="name" id="addMemberName" class="form-control" placeholder="Nombre" required autofocus>
                     </div>
                     <div class="form-group">
-                        <input type="password" name="password" class="form-control" placeholder="Contraseña (opcional)">
+                        <input type="password" name="password"  id="addMemberPassword"class="form-control" placeholder="Contraseña (opcional)">
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-success">Agregar</button>
+                    <button type="submit" class="btn btn-success" id="addMember">Agregar</button>
                 </div>
             </form>
         </div>

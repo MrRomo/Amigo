@@ -12,13 +12,12 @@ router.get('/', isNotLoggedIn,(req,res)=>{
 
 // user rooms
 router.get('/rooms', isLoggedIn,room.index) //obtiene todas las rooms del usuario
-router.get('/room/:code', isLoggedIn, room.get) //entra al admin de la room
 router.post('/room/create', isLoggedIn, room.create) //crea una room a partir de un nombre
 router.get('/room/delete/:id', isLoggedIn, room.delete) //elimina una room a partir de un id
 
 // public rooms
 router.post('/enter', room.getPublicEnter) //entra a la room publica de un usuario
-router.get('/@:username/:code', room.getPublic) //entra a la room publica de un usuario
+router.get('/@:username/:code', room.get) //entra al admin de la room
 
 
 

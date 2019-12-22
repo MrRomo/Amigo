@@ -1,4 +1,4 @@
-<div class="col-md-6 mb-2 mx-auto">
+<div class="col-md-9 mb-2 mx-auto">
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between">
@@ -15,7 +15,7 @@
             {{#each rooms}}
             <li class="list-group-item d-inline d-flex justify-content-between ">
                 <div class="w-50">
-                    <a href="/room/{{code}}" class="btn btn-primary btn-block text-uppercase">{{name}}</a>
+                    <a href="/@{{@root.user.username}}/{{code}}" class="btn btn-primary btn-block text-uppercase">{{name}}</a>
                 </div>
                 <div class="">
                     <span class="align-bottom">{{timeAgo createdAt}}</span>
