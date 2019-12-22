@@ -15,6 +15,8 @@ router.post('/member/add/:id', room.addMember)
 router.post('/member/delete/:id/:pos', room.deleteMember)
 router.post('/member/edit/:id/:pos', room.editMember)
 
+//ROOM FLUSH
+router.get('/room/flush/:id',room.distribute)
 
 
 module.exports = router;

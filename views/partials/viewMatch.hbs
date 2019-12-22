@@ -1,0 +1,72 @@
+<div class="modal fade" tabindex="-1" id="viewMatchModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h2 id="callback" style="margin: 0 0 0 10px; display:none;">{{callback}}</h2>
+                <h5 class="modal-title text-white" id="exampleModalLongTitle">Quien me tocó</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <h4>Rapido¡ Pasale el telefono a:</h4>
+                    <h2 id="nameMatch" class="text-center text-uppercase"></h2>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group text-center">
+                    <h2 id="cuentaRegresiva">10</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="checkMatchModal" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h2 id="callback" style="margin: 0 0 0 10px; display:none;">{{callback}}</h2>
+                <h5 class="modal-title text-white" id="exampleModalLongTitle">Quien me tocó</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <h4 id="nameViewMatchMember">Felicidades te tocó:</h4>
+                    <h2 id="nameViewMatch" class="text-center text-uppercase"></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    function viewMatch(name, match) {
+        $('#nameMatch').text(name)
+        $('#viewMatchModal').modal('show')
+        let count = parseInt($('#cuentaRegresiva').text())
+        console.log(count)
+        var redirect = setInterval(() => {
+            count--
+            $('#cuentaRegresiva').text(count)
+            if (!count) {
+                clearInterval(redirect)
+                setTimeout(() => {
+                    checkMatchModal(name,match)
+                }, 500)
+            }
+        }, 1000)
+    }
+
+    function checkMatchModal(name,match){
+        $('#nameViewMatch').text(match)
+        $('#nameViewMatchMember').text(`Felicidades ${name} te tocó:`)
+        $('#checkMatchModal').modal('show')
+    }
+
+</script>

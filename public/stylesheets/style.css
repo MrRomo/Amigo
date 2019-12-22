@@ -1,5 +1,5 @@
 body {
-    padding: 50px;
+    padding: 5vw;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
     background: #FF416C;
     /* fallback for old browsers */
@@ -11,4 +11,8 @@ body {
 
 a {
     color: #00B7FF;
+}
+
+.contApp {
+    max-width: 720px;
 }

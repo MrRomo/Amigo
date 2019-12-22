@@ -1,4 +1,4 @@
-<div class="col-lg-9 mb-2 mx-auto">
+<div class="mb-2 mx-auto contApp">
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between">
@@ -12,8 +12,13 @@
                 </div>
             </div>
             <div class="mr-0">
+                {{#if room.isOpen}}
                 <a class="btn btn-success text-white" data-toggle="modal" data-target="#addPersonModal">Agregar <i
                         class="fas fa-user-plus"></i></a>
+                {{else}}
+                    <h4 style="margin: 5px 0 0 10px;">Sala cerrada</h4>
+
+                {{/if}}
                 {{#if user}}
                 <a href="/logout" class="btn btn-success"><i class="fas fa-sign-out-alt"></i></a>
                 {{/if}}
@@ -37,8 +42,7 @@
                 </div>
                 {{else}}
                 <div class="">
-                    <a class="btn btn-success d-inline text-white eventMember">Quien me tocó <i
-                            class="fa fa-eye"></i></a>
+                    <a class="btn btn-success d-inline text-white eventMember" onclick="viewMatch('{{name}}','{{match}}')">Quien me tocó <i class="fa fa-eye"></i></a>
                 </div>
                 {{/if}}
             </li>
@@ -63,13 +67,18 @@
         </div>
     </div>
 </div>
+<p>{{room.isOpen}}</p>
 {{>alertDistribute}}
 {{/if}}
+{{>distributing}}
 {{>addPerson}}
 {{>editPerson}}
 <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-app.js"></script>
 <!-- Add additional services that you want to use -->
 <script src="https://www.gstatic.com/firebasejs/5.5.9/firebase-database.js"></script>
+
+
+{{#if room.isOpen}}
 <script>
     const formEditMember = document.querySelector("#editMember");
     const formAction = $('#editMember').attr('action')
@@ -77,11 +86,11 @@
     function editMember(_id, pos, name, password) {
         const action = formAction + '/' + pos
         console.log(_id, pos, name, password, formAction, action)
-        $('#editPersonModal').modal('show')
         $('#nameEditMember').val(name)
         $('#passwordEditMember').val(password)
         $('#posEditMember').val(pos)
         $('#editMember').attr('action', action)
+        $('#editPersonModal').modal('show')
     }
 
     $('#addMember').click((event) => {
@@ -119,10 +128,6 @@
         }).then(res => console.log(res))
     }
 
-</script>
-
-{{#if room.isOpen}}
-<script>
     const firebaseURL = $('#firebasURL').text()
     firebase.initializeApp({ databaseURL: firebaseURL });
     console
@@ -132,9 +137,26 @@
     var check = false
     room.on('value', function (snapshot) {
         users = snapshot.val();
-        console.log(users)
+        const usersParse = JSON.parse(users)
+        console.log(usersParse)
+        console.log(usersParse.member)
+        if (usersParse.mix) {
+            room.off('value')
+            $('#distributing').modal('show')
+            let count = 5
+            var redirect = setInterval(() => {
+                count--
+                $('#redirectPapers').text(count)
+                if (!count) {
+                    count = 0;
+                    clearInterval(redirect)
+                    setTimeout(()=>{
+                        location.reload()
+                    },500)
+                }
+            }, 1000)
+        }
         if ((users) && (check)) {
-            const usersParse = JSON.parse(users)
             console.log(usersParse.member)
             $('#listMember')[0].innerHTML = ""
             usersParse.member.forEach(x => {
@@ -155,8 +177,7 @@
                 <a class="dropdown-item align-bottom btn btn-success d-inline" onclick="editMember('${_id}',${pos},'${name}','${password}')"><i class="fa fa-pen"></i></a >
                 </div >
             </li >`
-
-
 </script>
-
+{{else}}
+{{>viewMatch}}
 {{/if}}

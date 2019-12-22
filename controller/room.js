@@ -30,9 +30,8 @@ crtl.get = async (req, res) => {
         console.log(user)
         let room = await db.get({ "userId": user.data[0].id, code }, Room)
         console.log(room)
-        room = room.data
-        if (room.length) {
-            room = room[0]
+        if (room.data.length && !room.error) {
+            room = room.data[0]
             res.render('room', { title: room.name, room, user: req.user, firebaseURL })
         } else {
             res.render('customError', { title: 'ERROR', message: `Error sala ${code} no encontrada`, callback })
@@ -60,7 +59,7 @@ crtl.create = async (req, res) => {
     query.name = req.body.name
     query.users = {
         member: [{ name: req.user.username, pos: 0, password: "" }],
-        mix: []
+        mix: false
     }
     const room = await db.create(query, Room)
     console.log(room);
@@ -88,18 +87,19 @@ crtl.addMember = async (req, res) => {
     if (room.data.length) {
         room = room.data[0]
         const { users } = room
+        if(!room.isOpen){
+            return res.render('customError', { title: 'ERROR', message: `Error sala ${id} esta sala ya esta cerrada`, callback })
+        }
         users.member.push({ name, password, pos: users.member.length })
         console.log(users)
         const query = {
             query: { '_id': id },
-            options: { "users": users }
+            options: { "users": users, "number": users.member.length }
         }
         const update = await db.update(query, Room)
         firebase.set(id, JSON.stringify(users))
         console.log(update);
-        res.status(200).json({
-            message: "member added"
-        })
+        res.redirect(req.headers.referer)
     } else {
         res.render('customError', { title: 'ERROR', message: `Error sala ${id} no encontrada`, callback })
     }
@@ -110,6 +110,9 @@ crtl.deleteMember = async (req, res) => {
     const room = await db.get({ "_id": id }, Room)
     if (room.data.length) {
         const { users } = room.data[0]
+        if(!room.data[0].isOpen){
+            return res.render('customError', { title: 'ERROR', message: `Error sala ${id} esta sala ya esta cerrada`, callback })
+        }
         users.member.splice(parseInt(pos), 1)
         for (let i = 0; i < users.member.length; i++) {
             users.member[i].pos = i
@@ -117,7 +120,7 @@ crtl.deleteMember = async (req, res) => {
         console.log(users)
         const query = {
             query: { '_id': id },
-            options: { "users": users }
+            options: { "users": users, "number": users.member.length }
         }
         const update = await db.update(query, Room)
         console.log(update);
@@ -136,12 +139,16 @@ crtl.editMember = async (req, res) => {
     const room = await db.get({ "_id": id }, Room)
     if (room.data.length) {
         const { users } = room.data[0]
+        if(!room.data[0].isOpen){
+            return res.render('customError', { title: 'ERROR', message: `Error sala ${id} esta sala ya esta cerrada`, callback })
+        }
+
         users.member[pos].name = name
         users.member[pos].password = password
         console.log(users);
         const query = {
             query: { '_id': id },
-            options: { "users": users }
+            options: { "users": users, "number": users.member.length }
         }
         firebase.set(id, JSON.stringify(users))
         const update = await db.update(query, Room)
@@ -153,4 +160,40 @@ crtl.editMember = async (req, res) => {
     }
 }
 
+crtl.distribute = async (req, res) => {
+    const { id } = req.params
+
+    let room = await db.get({ "_id": id }, Room)
+
+    console.log(room);
+    if (room.length || !room.error) {
+        const { users } = room.data[0]
+        const { member } = users
+        const temp_member = [...member]
+        const mix = []
+        const length = member.length
+        for (let i = 0; i < length; i++) {
+
+            let select = Math.floor(Math.random() * temp_member.length)
+            mix.push(temp_member[select])
+            temp_member.splice(select, 1)
+        }
+
+        for (let i = 0; i < length - 1; i++) {
+            mix[i].match = mix[i + 1].name
+            console.log(mix[i])
+        }
+        mix[length - 1].match = mix[0].name
+        const data = {
+            query: { '_id': id },
+            options: { 'users': { member, mix: true }, isOpen: false }
+        }
+        users.mix = true
+        let distributeRoom = db.update(data, Room)
+        firebase.set(id, JSON.stringify(users))
+        res.redirect(req.headers.referer)
+    } else {
+        res.render('customError', { title: 'ERROR', message: `Error sala ${id} no encontrada`, callback })
+    }
+}
 module.exports = crtl
