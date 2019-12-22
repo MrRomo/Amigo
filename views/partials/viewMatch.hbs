@@ -57,6 +57,8 @@
             if (!count) {
                 clearInterval(redirect)
                 setTimeout(() => {
+                    $('#viewMatchModal').modal('show')
+                    let count = parseInt($('#cuentaRegresiva').text(10))
                     checkMatchModal(name,match)
                 }, 500)
             }
