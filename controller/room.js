@@ -76,9 +76,7 @@ crtl.delete = async (req, res) => {
     const { id } = req.user
     const deleteRoom = await db.delete({ "userId": id, "_id": _id }, Room)
     firebase.del(_id)
-    res.status(200).json({
-        message: "deleted"
-    })
+    res.redirect(req.headers.referer)
 }
 
 
@@ -102,7 +100,7 @@ crtl.addMember = async (req, res) => {
         res.status(200).json({
             message: "member added"
         })
-    }else{
+    } else {
         res.render('customError', { title: 'ERROR', message: `Error sala ${id} no encontrada`, callback })
     }
 }
@@ -124,9 +122,12 @@ crtl.deleteMember = async (req, res) => {
         const update = await db.update(query, Room)
         console.log(update);
         firebase.set(id, JSON.stringify(users))
-
+        res.status(200).json({
+            message: "deleted"
+        })
+    } else {
+        res.render('customError', { title: 'ERROR', message: `Error sala ${id} no encontrada`, callback })
     }
-    res.redirect(req.headers.referer)
 }
 
 crtl.editMember = async (req, res) => {
@@ -144,8 +145,12 @@ crtl.editMember = async (req, res) => {
         }
         firebase.set(id, JSON.stringify(users))
         const update = await db.update(query, Room)
+        res.status(200).json({
+            message: "member updated"
+        })
+    } else {
+        res.render('customError', { title: 'ERROR', message: `Error sala ${id} no encontrada`, callback })
     }
-    res.redirect(req.headers.referer)
 }
 
 module.exports = crtl
