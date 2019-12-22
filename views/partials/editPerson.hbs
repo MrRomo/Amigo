@@ -11,10 +11,10 @@
             <form action="/api/member/edit/{{room._id}}" method="post" id="editMember">
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="text" name="name" id="nameEditMember" class="form-control" placeholder="Nombre" required>
+                        <input type="text" name="name" id="nameEditMember" class="form-control" placeholder="Nombre" required maxlength="20" >
                     </div>
                     <div class="form-group">
-                        <input type="password" name="password" id="passwordEditMember" class="form-control" placeholder="Contraseña (opcional)">
+                        <input type="password" name="password" id="passwordEditMember" class="form-control" placeholder="Contraseña (opcional)" maxlength="20" >
                     </div>
                     <div class="form-group">
                         <input type="hidden" name="pos" id="posEditMember" class="form-control" placeholder="Contraseña (opcional)">

@@ -10,13 +10,13 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <h4>Rapido¡ Pasale el telefono a:</h4>
+                    <h4 class="text-center">Rapido¡ Pasale el telefono a:</h4class="text-center text-uppercase">
                     <h2 id="nameMatch" class="text-center text-uppercase"></h2>
                 </div>
             </div>
             <div class="modal-body">
                 <div class="form-group text-center">
-                    <h2 id="cuentaRegresiva">10</h2>
+                    <h1 id="cuentaRegresiva">10</h1>
                 </div>
             </div>
         </div>
@@ -45,29 +45,43 @@
 
 
 <script>
-
+    var stopInterval = true
     function viewMatch(name, match) {
+        let count = 10
+        $('#cuentaRegresiva').text(count)
         $('#nameMatch').text(name)
         $('#viewMatchModal').modal('show')
-        let count = parseInt($('#cuentaRegresiva').text())
         console.log(count)
+        stopInterval = false
         var redirect = setInterval(() => {
             count--
             $('#cuentaRegresiva').text(count)
+            console.log('cuenta regresiva', count)
+            if(stopInterval){
+                console.log('interval stoped')
+                clearInterval(redirect)
+            } 
             if (!count) {
                 clearInterval(redirect)
                 setTimeout(() => {
-                    $('#viewMatchModal').modal('show')
+                    $('#viewMatchModal').modal('hide')
                     let count = parseInt($('#cuentaRegresiva').text(10))
-                    checkMatchModal(name,match)
+                    checkMatchModal(name, match)
                 }, 500)
             }
         }, 1000)
     }
+ 
+    // When you want to clear them:
 
-    function checkMatchModal(name,match){
+    $("#viewMatchModal").on("hidden.bs.modal", function () {
+        stopInterval = true
+        console.log('cerro el modal y clear interval')
+    });
+
+    function checkMatchModal(name, match) {
         $('#nameViewMatch').text(match)
-        $('#nameViewMatchMember').text(`Felicidades ${name} te tocó:`)
+        $('#nameViewMatchMember').text(`Felicidades ${name.toUpperCase()} te tocó:`)
         $('#checkMatchModal').modal('show')
     }
 

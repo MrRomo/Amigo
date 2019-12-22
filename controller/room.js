@@ -18,8 +18,15 @@ crtl.index = async (req, res) => {
 }
 
 crtl.getPublicEnter = async (req, res) => {
-    const { username, code } = req.body
-    res.redirect(`/@${username.toLowerCase()}/${code}`)
+    const {code } = req.body
+    let room = await db.get({  code }, Room)
+    if(room.data.length){
+        const user = await db.get({ 'id':room.data[0].userId }, User)
+        const {username} = user.data[0]
+        res.redirect(`/@${username.toLowerCase()}/${code}`)
+    }else {
+        res.render('customError', { title: 'ERROR', message: `Error sala ${code} no encontrada`, callback })
+    }
 }
 
 crtl.get = async (req, res) => {
