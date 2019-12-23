@@ -7,7 +7,7 @@ const { isLoggedIn, isNotLoggedIn } = require('../lib/auth')
 
     /* GET home page. */
 router.get('/', isNotLoggedIn,(req,res)=>{
-    res.render('index', { title: 'Express' });
+    res.render('index', { title: 'Amigo Secreto Online' });
 })
 
 // user rooms
