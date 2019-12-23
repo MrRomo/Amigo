@@ -10,10 +10,12 @@ const callback = process.env.callback
 /// ROOM ROUTER
 crtl.index = async (req, res) => {
     let rooms = await db.get({ "userId": req.user.id }, Room, { limit: 100 })
+    let user =  await db.get({ "id": req.user.id },User)
+    user = user.data[0]
     if (rooms.error) {
         res.render('error', { title: 'error', message: room.message })
     } else {
-        res.render('rooms', { title: 'Rooms', user: req.user, rooms: rooms.data })
+        res.render('rooms', { title: 'Rooms', user, rooms: rooms.data })
     }
 }
 
@@ -31,7 +33,7 @@ crtl.getPublicEnter = async (req, res) => {
 
 crtl.get = async (req, res) => {
     const { username, code } = req.params
-    const user = await db.get({ username }, User)
+    let user = await db.get({ username }, User)
 
     if (user.data.length) {
         console.log(user)
@@ -39,7 +41,12 @@ crtl.get = async (req, res) => {
         console.log(room)
         if (room.data.length && !room.error) {
             room = room.data[0]
-            res.render('room', { title: room.name, room, user: req.user, firebaseURL })
+            if(req.user){
+                user = (req.user.id==room.userId)?req.user:null
+            }else{
+                user = null
+            }            
+            res.render('room', { title: room.name, room, user, firebaseURL })
         } else {
             res.render('customError', { title: 'ERROR', message: `Error sala ${code} no encontrada`, callback })
         }
@@ -51,6 +58,7 @@ crtl.get = async (req, res) => {
 crtl.create = async (req, res) => {
     console.log('Creando una sala');
     let code = Math.floor(100000 + Math.random() * 900000)
+    const user = await db.get({"id":req.user.id}, User)
     const query = {
         userId: req.user.id,
         code
