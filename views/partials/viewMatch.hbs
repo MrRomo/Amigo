@@ -81,7 +81,6 @@
         passwordGlobal = password
         matchGlobal = match
         nameGlobal = name
-        console.log(name, match, passwordGlobal)
         if (passwordGlobal != '') {
             $('#nameAlert').text(`La persona ${name.toUpperCase()} tiene contraseña`)
             $('#checkPassword').modal('show')
@@ -92,7 +91,6 @@
     }
     function checkPassword() {
         const password = $('#passwordCheckBox').val()
-        console.log(password)
         if (passwordGlobal == password) {
             viewMatch(nameGlobal, matchGlobal)
             $('#checkPassword').modal('hide')
@@ -111,14 +109,11 @@
         $('#cuentaRegresiva').text(count)
         $('#nameMatch').text(name)
         $('#viewMatchModal').modal('show')
-        console.log(count)
         stopInterval = false
         var redirect = setInterval(() => {
             count--
             $('#cuentaRegresiva').text(count)
-            console.log('cuenta regresiva', count)
             if (stopInterval) {
-                console.log('interval stoped')
                 clearInterval(redirect)
             }
             if (!count) {

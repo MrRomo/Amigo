@@ -97,10 +97,8 @@
 <script>
     const formEditMember = document.querySelector("#editMember");
     const formAction = $('#editMember').attr('action')
-    console.log(formEditMember)
     function editMember(_id, pos, name, password) {
         const action = formAction + '/' + pos
-        console.log(_id, pos, name, password, formAction, action)
         $('#nameEditMember').val(name)
         $('#passwordEditMember').val(password)
         $('#posEditMember').val(pos)
@@ -133,7 +131,6 @@
     })
 
     function eventMember(url, data) {
-        console.log(url)
         fetch(url, {
             method: 'POST', // or 'PUT'
             body: JSON.stringify(data), // data can be `string` or {object}!
@@ -145,7 +142,6 @@
 
     const firebaseURL = $('#firebasURL').text()
     firebase.initializeApp({ databaseURL: firebaseURL });
-    console
     var database = firebase.database();
     const room_id = $('#room_id').text()
     var room = database.ref('rooms/' + room_id)
@@ -153,8 +149,6 @@
     room.on('value', function (snapshot) {
         users = snapshot.val();
         const usersParse = JSON.parse(users)
-        console.log(usersParse)
-        console.log(usersParse.member)
         if (usersParse.mix) {
             room.off('value')
             $('#distributing').modal('show')
@@ -172,7 +166,6 @@
             }, 1000)
         }
         if ((users) && (check)) {
-            console.log(usersParse.member)
             $('#listMember')[0].innerHTML = ""
             usersParse.member.forEach(x => {
                 const render = template(x, room_id)
