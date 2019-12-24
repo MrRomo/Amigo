@@ -2,6 +2,7 @@
 .frontApp {
     z-index: 3;
     padding: 5vw;
+    padding-bottom: 0;
 }
 
 body {
