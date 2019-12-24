@@ -177,12 +177,12 @@
 
     const template = ({ name, pos, password }, _id) => ` <li class="list-group-item d-inline d-flex justify-content-between ">
             <div class="">
-                <a class="btn btn-primary btn-block text-white">${name}</a>
+                <a class="btn btn-primary btn-block text-white text-uppercase">${name}</a>
             </div>
-            <div class="">
-                <a class="align-bottom dropdown-item btn btn-danger d-inline"
+            <div class="" style:"display: -webkit-inline-box;">
+                <a class="btn text-white btn-danger eventMember mr-4 "
                      onclick="eventMember('/api/member/delete/${_id}/${pos}')"><i class="fa fa-trash-alt"></i></a>
-                <a class="dropdown-item align-bottom btn btn-success d-inline" onclick="editMember('${_id}',${pos},'${name}','${password}')"><i class="fa fa-pen"></i></a >
+                <a class="btn text-white btn-success" onclick="editMember('${_id}',${pos},'${name}','${password}')"><i class="fa fa-pen"></i></a >
                 </div >
             </li >`
 </script>
