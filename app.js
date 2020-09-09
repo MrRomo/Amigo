@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const exphbs = require('express-handlebars')
 const { mongo_db } = require('./database')
+require("dotenv").config();
 const env = require('./config')
 const app = express();
 const passport = require('passport');
@@ -83,6 +84,6 @@ app.use(function (err, req, res, next) {
 const port = (process.env.PORT || '4000');
 app.set('port', port);
 app.listen(port, () => {
-    console.log('Server on port: ', port);
-    console.log("Enviroment: ", app.get('env'));
+    console.log(`Server on http://localhost:${port}`);
+    console.log(`Enviroment: ${app.get('env')}`);
 })
