@@ -13,7 +13,6 @@ crtl.index = async (req, res) => {
     let rooms = await db.get({ "userId": req.user.id }, Room, { limit: 100 })
     let user =  await db.get({ "id": req.user.id },User)
     user = user.data[0]
-    console.log(user);
     if (rooms.error) {
         res.render('error', { title: 'error', message: room.message })
     } else {
