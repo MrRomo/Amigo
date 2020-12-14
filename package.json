@@ -22,7 +22,7 @@
     "handlebars": "4.5.3",
     "http-errors": "~1.6.3",
     "moment": "^2.24.0",
-    "mongoose": "^5.8.1",
+    "mongoose": "^5.11.7",
     "morgan": "~1.9.1",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0"
